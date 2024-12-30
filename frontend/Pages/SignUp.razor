@@ -1,0 +1,150 @@
+@page "/signup"
+@using ParkingService.Client
+@inject UserApiService UserApiService
+@inject NavigationManager NavigationManager
+@using ParkingService.Models
+
+<style>
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 80vh;
+        background: linear-gradient(to bottom, #a3bad2, #aec4db);
+        color: white;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .login-box {
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .login-box h1 {
+        margin-bottom: 20px;
+        font-size: 2rem;
+        color: #333;
+    }
+
+    .login-box form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .login-box input[type="text"],
+    .login-box input[type="password"] {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+
+    .login-box button {
+        padding: 10px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .login-box button:hover {
+        background-color: #0056b3;
+    }
+
+    .login-box a {
+        display: block;
+        margin-top: 10px;
+        color: #007bff;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .login-box a:hover {
+        text-decoration: underline;
+    }
+
+    .error-message {
+        color: red;
+        font-size: 0.9rem;
+    }
+
+    .success-message {
+        color: green;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-box">
+        <h1>Sign Up</h1>
+        <form @onsubmit="HandleSignup">
+            <input type="text" @bind="Username" placeholder="Username" required />
+            <input type="text" @bind="Email" placeholder="Email" required />
+            <input type="password" @bind="Password" placeholder="Password" required />
+            <button type="submit">Sign Up</button>
+        </form>
+        <a href="/login">Already have an account? Log in</a>
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <p class="error-message">@ErrorMessage</p>
+        }
+
+        @if (!string.IsNullOrEmpty(SuccessMessage))
+        {
+            <p class="success-message">@SuccessMessage</p>
+        }
+    </div>
+</div>
+
+@code {
+    private string Username { get; set; } = string.Empty;
+    private string Email { get; set; } = string.Empty;
+    private string Password { get; set; } = string.Empty;
+    private string ErrorMessage { get; set; } = string.Empty;
+    private string SuccessMessage { get; set; } = string.Empty;
+
+    private async Task HandleSignup()
+    {
+        try
+        {
+            var newUser = new User
+            {
+                username = Username,
+                email = Email,
+                password = Password,
+                created_at = DateTime.UtcNow
+            };
+            Console.WriteLine($"Username: {newUser.username}, Email: {newUser.email}, Password: {newUser.password}, Created At: {newUser.created_at}");
+            var createdUser = await UserApiService.CreateUserAsync(newUser);
+
+            if (createdUser != null)
+            {
+                SuccessMessage = "Account created successfully!";
+                ErrorMessage = string.Empty;
+
+                NavigationManager.NavigateTo("/login");
+            }
+            else
+            {
+                ErrorMessage = "Failed to create account. Please try again.";
+                SuccessMessage = string.Empty;
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "An error occurred during signup. Please try again later.";
+            SuccessMessage = string.Empty;
+            Console.WriteLine(ex.Message);
+        }
+    }
+}

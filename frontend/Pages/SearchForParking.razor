@@ -1,0 +1,20 @@
+@page "/dashboard"
+@inject IJSRuntime JS
+@using ParkingService.Client
+@inject ParkingApiService ParkingApiService
+
+<h3>Parking Locations</h3>
+<div id="map" style="height: 500px;"></div>  
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch GeoJSON data from backend
+        var geoJsonData = await ParkingApiService.GetParkingDataAsGeoJsonAsync();
+        
+
+
+        // Call JavaScript function to initialize map with GeoJSON data
+        await JS.InvokeVoidAsync("initializeMap", geoJsonData);
+    }
+}

@@ -1,0 +1,129 @@
+@page "/login"
+@using ParkingService.Client
+@inject UserApiService UserApiService
+<style>
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 80vh;
+        background: linear-gradient(to bottom, #a3bad2, #aec4db);
+        color: white;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .login-box {
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .login-box h1 {
+        margin-bottom: 20px;
+        font-size: 2rem;
+        color: #333;
+    }
+
+    .login-box form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .login-box input[type="text"],
+    .login-box input[type="password"] {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+
+    .login-box button {
+        padding: 10px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .login-box button:hover {
+        background-color: #0056b3;
+    }
+
+    .login-box a {
+        display: block;
+        margin-top: 10px;
+        color: #007bff;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .login-box a:hover {
+        text-decoration: underline;
+    }
+    .error-message {
+        color: white;
+        background-color: red;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        text-align: center;
+        font-weight: bold;
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-box">
+        <h1>Login</h1>
+        <form @onsubmit="HandleLogin">
+            <input type="text" @bind="Email" placeholder="Email" required />
+            <input type="password" @bind="Password" placeholder="Password" required />
+            <button type="submit">Log In</button>
+        </form>
+        <a href="/signup">Don't have an account? Sign Up</a>
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <p class="error-message">@ErrorMessage</p>
+        }
+    </div>
+</div>
+
+@code {
+    private string Email { get; set; } = string.Empty;
+    private string Password { get; set; } = string.Empty;
+    private string ErrorMessage { get; set; } = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+            var user = await UserApiService.GetUserByIdAsync(Email);
+
+            if (user == null || user.password != Password)
+            {
+                ErrorMessage = "Invalid email or password.";
+            }
+            else
+            {
+                // Navigate to another page on successful login
+                NavigationManager.NavigateTo("/dashboard");
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "An error occurred during login. Please try again later.";
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+}
