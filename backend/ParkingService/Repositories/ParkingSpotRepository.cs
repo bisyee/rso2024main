@@ -17,14 +17,19 @@ namespace ParkingService.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<ParkingSpot>> GetAllAsync()
+        public async Task<IEnumerable<ParkingSpots>> GetAllAsync()
         {
-            return await _context.ParkingSpots.ToListAsync();
+            return await _context.parkingspots.ToListAsync();
         }
 
         public async Task<ParkingSpot?> GetByIdAsync(int id)
         {
             return await _context.ParkingSpots.FindAsync(id);
+        }
+
+         public async Task<ParkingSpots?> GetByNameAsync(string loc)
+        {
+            return await _context.parkingspots.FirstOrDefaultAsync(u => u.location == loc);
         }
 
         public async Task<ParkingSpot> AddAsync(ParkingSpot spot)
@@ -33,6 +38,38 @@ namespace ParkingService.Repositories
             await _context.SaveChangesAsync();
             return spot;
         }
+
+        public async Task<string> ImportGeoJson(GeoJson geoJson)
+        {
+            foreach (var geometry in geoJson.geometries)
+            {
+                if (geometry.type == "Point")
+                {
+                    // Extract latitude and longitude from GeoJSON
+                    var lat = geometry.coordinates[1];
+                    var lon = geometry.coordinates[0];
+                    string location1 = $"{lat},{lon}";
+
+                    var existingSpot = await _context.parkingspots
+                        .FirstOrDefaultAsync(ps => ps.location == location1);
+
+                     if (existingSpot == null){
+                        await _context.parkingspots.AddAsync(new ParkingSpots
+                        {
+                            location = location1,
+                            totalspots = 40, // Default total spots
+                            isavailable= true,
+                            availablespots = 40, // Default available spots
+                            type = "General",    // Default type
+                            priceperhour = 2// Default price per hour
+                        });}
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return "Parking spots imported successfully.";
+        }
+
 
         public async Task<ParkingSpot?> UpdateAsync(ParkingSpot spot)
         {

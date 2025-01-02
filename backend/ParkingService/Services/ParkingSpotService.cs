@@ -12,6 +12,7 @@ using NetTopologySuite;
 using ProjNet.CoordinateSystems;
 using ProjNet.CoordinateSystems.Transformations;
 
+
 namespace ParkingService.Services
 {
   public class ParkingSpotService : IParkingSpotService
@@ -32,60 +33,64 @@ namespace ParkingService.Services
         var geoJsonWriter = new GeoJsonWriter();
         return geoJsonWriter.Write(features);
     }
-
-   public string TransformToWGS84(string geoJson)
-{
-    var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory();
-    var reader = new GeoJsonReader();
-    var writer = new GeoJsonWriter();
-
-    var sourceGeometry = reader.Read<GeometryCollection>(geoJson);
-
-    var sourceCS = ProjectedCoordinateSystem.WGS84_UTM(33, true);
-    var targetCS = GeographicCoordinateSystem.WGS84;
-
-    var transform = new CoordinateTransformationFactory().CreateFromCoordinateSystems(sourceCS, targetCS);
-
-    foreach (var geom in sourceGeometry.Geometries)
+    public async Task<string> ImportGeoJsonAsync(GeoJson geoJson)
     {
-        if (geom is Point point)
-        {
-            var newCoord = transform.MathTransform.Transform(new[] { point.X, point.Y });
-            point.Coordinate.X = newCoord[0];
-            point.Coordinate.Y = newCoord[1];
-        }
-        else if (geom is LineString line)
-        {
-            for (int i = 0; i < line.Coordinates.Length; i++)
-            {
-                var newCoord = transform.MathTransform.Transform(new[] { line.Coordinates[i].X, line.Coordinates[i].Y });
-                line.Coordinates[i].X = newCoord[0];
-                line.Coordinates[i].Y = newCoord[1];
-            }
-        }
-        else if (geom is Polygon polygon)
-        {
-            var newShell = transform.MathTransform.Transform(new[] { polygon.Shell.Coordinates[0].X, polygon.Shell.Coordinates[0].Y });
-            polygon.Shell.Coordinates[0].X = newShell[0];
-            polygon.Shell.Coordinates[0].Y = newShell[1];
+        return await _repository.ImportGeoJson(geoJson);
+    }
 
-            foreach (var hole in polygon.Holes)
+    public string TransformToWGS84(string geoJson)
+    {
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory();
+        var reader = new GeoJsonReader();
+        var writer = new GeoJsonWriter();
+
+        var sourceGeometry = reader.Read<GeometryCollection>(geoJson);
+
+        var sourceCS = ProjectedCoordinateSystem.WGS84_UTM(33, true);
+        var targetCS = GeographicCoordinateSystem.WGS84;
+
+        var transform = new CoordinateTransformationFactory().CreateFromCoordinateSystems(sourceCS, targetCS);
+
+        foreach (var geom in sourceGeometry.Geometries)
+        {
+            if (geom is Point point)
             {
-                for (int i = 0; i < hole.Coordinates.Length; i++)
+                var newCoord = transform.MathTransform.Transform(new[] { point.X, point.Y });
+                point.Coordinate.X = newCoord[0];
+                point.Coordinate.Y = newCoord[1];
+            }
+            else if (geom is LineString line)
+            {
+                for (int i = 0; i < line.Coordinates.Length; i++)
                 {
-                    var newCoord = transform.MathTransform.Transform(new[] { hole.Coordinates[i].X, hole.Coordinates[i].Y });
-                    hole.Coordinates[i].X = newCoord[0];
-                    hole.Coordinates[i].Y = newCoord[1];
+                    var newCoord = transform.MathTransform.Transform(new[] { line.Coordinates[i].X, line.Coordinates[i].Y });
+                    line.Coordinates[i].X = newCoord[0];
+                    line.Coordinates[i].Y = newCoord[1];
+                }
+            }
+            else if (geom is Polygon polygon)
+            {
+                var newShell = transform.MathTransform.Transform(new[] { polygon.Shell.Coordinates[0].X, polygon.Shell.Coordinates[0].Y });
+                polygon.Shell.Coordinates[0].X = newShell[0];
+                polygon.Shell.Coordinates[0].Y = newShell[1];
+
+                foreach (var hole in polygon.Holes)
+                {
+                    for (int i = 0; i < hole.Coordinates.Length; i++)
+                    {
+                        var newCoord = transform.MathTransform.Transform(new[] { hole.Coordinates[i].X, hole.Coordinates[i].Y });
+                        hole.Coordinates[i].X = newCoord[0];
+                        hole.Coordinates[i].Y = newCoord[1];
+                    }
                 }
             }
         }
+
+        return writer.Write(sourceGeometry);
     }
 
-    return writer.Write(sourceGeometry);
-    }
 
-
-    public async Task<IEnumerable<ParkingSpot>> GetAllParkingSpotsAsync()
+    public async Task<IEnumerable<ParkingSpots>> GetAllParkingSpotsAsync()
     {
         return await _repository.GetAllAsync();
     }
@@ -93,6 +98,11 @@ namespace ParkingService.Services
     public async Task<ParkingSpot?> GetParkingSpotByIdAsync(int id)
     {
         return await _repository.GetByIdAsync(id);
+    }
+
+    public async Task<ParkingSpots?> GetParkingSpotByLocationAsync(string loc)
+    {
+        return await _repository.GetByNameAsync(loc);
     }
 
     public async Task<ParkingSpot> AddParkingSpotAsync(ParkingSpot spot)

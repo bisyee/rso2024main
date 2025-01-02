@@ -1,7 +1,134 @@
 ﻿@page "/home"
+@inject HttpClient Http
+@using ParkingService.Models
+@inject IJSRuntime JSRuntime
+<PageTitle>Parking Spot</PageTitle>
 
-<PageTitle>Home</PageTitle>
+<h3>Parking Spot Details</h3>
 
-<h1>Hello, world!</h1>
+@if (parkingSpot == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Parking Spot Details</h5>
+            <p><strong>Available:</strong> @(parkingSpot.isavailable ? "Yes" : "No")</p>
+            <p><strong>Total Spots:</strong> @parkingSpot.totalspots</p>
+            <p><strong>Available Spots:</strong> @parkingSpot.availablespots</p>
+            <p><strong>Type:</strong> @parkingSpot.type</p>
+            <p><strong>Price per Hour:</strong> @parkingSpot.priceperhour</p>
 
-Welcome to your new app.
+            @if (isReserving)
+            {
+                <p><strong>Reservation Start Time:</strong> @reservationStartTime.ToString("HH:mm:ss")</p>
+                <p><strong>Time Spent:</strong> @timeSpent.ToString(@"hh\:mm\:ss")</p>
+            }
+            
+            <button class="btn btn-primary" @onclick="ReserveSpot">Reserve Spot</button>
+
+            @if (isReserving)
+            {
+                <button class="btn btn-danger" @onclick="CancelReservation">Cancel Reservation</button>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private ParkingSpots parkingSpot;
+    private bool isReserving = false;
+    private DateTime reservationStartTime;
+    private TimeSpan timeSpent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var location = await GetQueryParamAsync("location");
+        Console.Write(location);
+        if (!string.IsNullOrEmpty(location))
+        {
+            parkingSpot = await GetParkingSpotByLocationAsync(location);
+        }
+    }
+
+    private async Task<ParkingSpots> GetParkingSpotByLocationAsync(string loc)
+    {
+        try
+        {
+            var formattedLocation = loc.Replace('.', ',');
+            var response = await Http.GetFromJsonAsync<ParkingSpots>($"api/ParkingSpot/{formattedLocation}");
+            return response;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private async Task<string> GetQueryParamAsync(string param)
+    {
+        return await JSRuntime.InvokeAsync<string>("getQueryParam", new object[] { param });
+    }
+
+    private async Task ReserveSpot()
+    {
+        if (parkingSpot != null && parkingSpot.isavailable && parkingSpot.availablespots > 0)
+        {
+            // Start the reservation process
+            isReserving = true;
+            reservationStartTime = DateTime.Now; // Record the start time of the reservation
+            timeSpent = TimeSpan.Zero; // Initialize time spent
+
+            // Decrease available spots
+            parkingSpot.availablespots--;
+            await UpdateParkingSpotAsync(parkingSpot); // Send updated spots to the server
+
+            // Optionally, you can start a timer to update time spent if needed
+            var timer = new System.Timers.Timer(1000); // 1-second intervals
+            timer.Elapsed += TimerElapsed;
+            timer.Start();
+        }
+    }
+
+    private void TimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
+    {
+        if (isReserving)
+        {
+            // Update time spent
+            timeSpent = DateTime.Now - reservationStartTime;
+            StateHasChanged(); // Refresh UI to update time spent
+        }
+    }
+
+    private async Task CancelReservation()
+    {
+        if (isReserving)
+        {
+            timeSpent = DateTime.Now - reservationStartTime;
+
+            isReserving = false;
+
+            parkingSpot.availablespots++;
+
+            await UpdateParkingSpotAsync(parkingSpot);
+
+            // Stop the timer
+            timeSpent = DateTime.Now - reservationStartTime; 
+            StateHasChanged(); // Update UI
+        }
+    }
+
+    private async Task UpdateParkingSpotAsync(ParkingSpots updatedSpot)
+    {
+        try
+        {
+            await Http.PutAsJsonAsync($"api/ParkingSpot/{updatedSpot.location}", updatedSpot);
+        }
+        catch
+        {
+            // Handle errors (e.g., network issues)
+        }
+    }
+}

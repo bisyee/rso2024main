@@ -22,13 +22,21 @@ namespace ParkingService.Controllers
             return Ok(spots);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var spot = await _parkingService.GetParkingSpotByIdAsync(id);
-            if (spot == null) return NotFound();
-            return Ok(spot);
-        }
+        // [HttpGet("{id}")]
+        // public async Task<IActionResult> GetById(int id)
+        // {
+        //     var spot = await _parkingService.GetParkingSpotByIdAsync(id);
+        //     if (spot == null) return NotFound();
+        //     return Ok(spot);
+        // }
+        //  [HttpGet("{loc}")]
+        //  [Route("")]
+        // public async Task<IActionResult> GetById(string loc)
+        // {
+        //     var spot = await _parkingService.GetParkingSpotByLocationAsync(loc);
+        //     if (spot == null) return NotFound();
+        //     return Ok(spot);
+        // }
         [HttpGet("parking")]
         public async Task<IActionResult> GetParkingData()
         {
@@ -36,14 +44,33 @@ namespace ParkingService.Controllers
             var jsonResult = JsonSerializer.Serialize(geoJsonData); 
             return new JsonResult(jsonResult);
         }
-
-
-        [HttpPost]
-        public async Task<IActionResult> Create(ParkingSpot spot)
+        [HttpPost("import-geojson")]
+        public async Task<IActionResult> ImportGeoJson([FromBody] GeoJson geoJson)
         {
-            var newSpot = await _parkingService.AddParkingSpotAsync(spot);
-            return CreatedAtAction(nameof(GetById), new { id = newSpot.id }, newSpot);
+            if (geoJson == null || geoJson.geometries == null || geoJson.geometries.Count == 0)
+            {
+                return BadRequest("Invalid GeoJSON data.");
+            }
+
+            var result = await _parkingService.ImportGeoJsonAsync(geoJson);
+            return Ok(result);
         }
+        [HttpGet("{loc}")]
+        public async Task<IActionResult> GetById(string loc)
+        {
+            var spot = await _parkingService.GetParkingSpotByLocationAsync(loc);
+            if (spot == null) return NotFound();
+            return Ok(spot);
+        }
+
+
+
+        // [HttpPost]
+        // public async Task<IActionResult> Create(ParkingSpot spot)
+        // {
+        //     var newSpot = await _parkingService.AddParkingSpotAsync(spot);
+        //     return CreatedAtAction(nameof(GetById), new { id = newSpot.id }, newSpot);
+        // }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, ParkingSpot spot)
