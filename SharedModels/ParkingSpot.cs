@@ -4,8 +4,10 @@ namespace ParkingService.Models
     {
         public int id { get; set; }
         public string location { get; set; }
-        public bool is_available { get; set; }
+        public bool isavailable { get; set; }
+        public int totalspots { get; set; }
+        public bool availablespots { get; set; }
         public string type { get; set; }
-        public decimal price_per_hour { get; set; }
+        public decimal priceperhour { get; set; }
     }
 }

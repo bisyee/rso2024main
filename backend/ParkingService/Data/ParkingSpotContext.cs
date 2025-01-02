@@ -8,6 +8,7 @@ namespace ParkingService.Data
         public ParkingSpotContext(DbContextOptions<ParkingSpotContext> options) : base(options) { }
 
         public DbSet<ParkingSpot> ParkingSpots { get; set; }
+        public DbSet<ParkingSpots> parkingspots { get; set; }
         public DbSet<User> users { get; set; }
         public DbSet<Reservation> reservations { get; set; }
 

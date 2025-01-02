@@ -32,11 +32,11 @@ namespace ParkingService.Client
         }
 
         // Get parking spot by Id
-        public async Task<ParkingSpot> GetParkingSpotByIdAsync(int id)
+        public async Task<ParkingSpot> GetParkingSpotByLocationAsync(string loc)
         {
             try
             {
-                var response = await _httpClient.GetFromJsonAsync<ParkingSpot>($"api/parkingSpot/{id}");
+                var response = await _httpClient.GetFromJsonAsync<ParkingSpot>($"api/parkingSpot/{loc}");
                 return response;
             }
             catch
