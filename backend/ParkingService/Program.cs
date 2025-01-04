@@ -5,6 +5,12 @@ using ParkingService.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.ConfigureAppConfiguration((context, config) =>
+{
+    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+    config.AddEnvironmentVariables();
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -38,7 +44,7 @@ if (app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseCors("AllowFrontend");
-
+app.UseRouting();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 
