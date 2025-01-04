@@ -15,12 +15,12 @@ namespace ParkingService.Controllers
             _parkingService = parkingService;
         }
 
-        // [HttpGet]
-        // public async Task<IActionResult> GetAll()
-        // {
-        //     var spots = await _parkingService.GetAllParkingSpotsAsync();
-        //     return Ok(spots);
-        // }
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var spots = await _parkingService.GetAllParkingSpotsAsync();
+            return Ok(spots);
+        }
 
         // [HttpGet("{id}")]
         // public async Task<IActionResult> GetById(int id)
