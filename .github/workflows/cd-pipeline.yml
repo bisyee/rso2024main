@@ -40,7 +40,7 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           docker build -t parkingsc1.azurecr.io/parkingservice:latest ./backend/ParkingService
-          docker push parkingsc1.azurecr.io/parkingservice:latest  ./backend/ParkingService
+          docker push parkingsc1.azurecr.io/parkingservice:latest
 
       - name: Set up Kubernetes CLI
         uses: azure/setup-kubectl@v3
