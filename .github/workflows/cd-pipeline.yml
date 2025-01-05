@@ -34,8 +34,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Log in to Azure Container Registry
-        run: |
-          echo "${{ secrets.ACR_PASSWORD }}" | docker login parkingsc1.azurecr.io --username ${{ secrets.ACR_USERNAME }} --password-stdin
+        uses: docker/login-action@v2
+        with:
+          registry: parkingsc1.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Build and Push Docker Image
         run: |
