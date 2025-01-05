@@ -1,0 +1,58 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0'
+
+      - name: Install Dependencies
+        run: dotnet restore rso-project2024.sln
+
+      - name: Build the Application
+        run: dotnet build rso-project2024.sln --configuration Release --no-restore
+
+      - name: Run Tests
+        run: dotnet test rso-project2024.sln --no-build --verbosity normal
+
+  build-and-deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Log in to Azure Container Registry
+        run: |
+          echo "${{ secrets.ACR_PASSWORD }}" | docker login parkingsc1.azurecr.io --username ${{ secrets.ACR_USERNAME }} --password-stdin
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t parkingsc1.azurecr.io/parkingservice:latest ./backend/ParkingService
+          docker push parkingsc1.azurecr.io/parkingservice:latest  ./backend/ParkingService
+
+      - name: Set up Kubernetes CLI
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.26.0'
+
+      - name: Authenticate with Kubernetes
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
+          export KUBECONFIG=$(pwd)/kubeconfig.yaml
+
+      - name: Apply Kubernetes Manifests
+        run: |
+          kubectl apply -f ./k8s/
+          kubectl rollout status deployment/parkingservice-deployment
