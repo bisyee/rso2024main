@@ -17,24 +17,24 @@ namespace ParkingService.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<ParkingSpots>> GetAllAsync()
+        public async Task<IEnumerable<AllParkingSpots>> GetAllAsync()
         {
-            return await _context.parkingspots.ToListAsync();
+            return await _context.allspots.ToListAsync();
         }
 
         public async Task<ParkingSpot?> GetByIdAsync(int id)
         {
-            return await _context.ParkingSpots.FindAsync(id);
+            return await _context.parkingspots.FindAsync(id);
         }
 
-         public async Task<ParkingSpots?> GetByNameAsync(string loc)
+         public async Task<AllParkingSpots?> GetByNameAsync(string loc)
         {
-            return await _context.parkingspots.FirstOrDefaultAsync(u => u.location == loc);
+            return await _context.allspots.FirstOrDefaultAsync(u => u.location == loc);
         }
 
         public async Task<ParkingSpot> AddAsync(ParkingSpot spot)
         {
-            await _context.ParkingSpots.AddAsync(spot);
+            await _context.parkingspots.AddAsync(spot);
             await _context.SaveChangesAsync();
             return spot;
         }
@@ -50,11 +50,11 @@ namespace ParkingService.Repositories
                     var lon = geometry.coordinates[0];
                     string location1 = $"{lat},{lon}";
 
-                    var existingSpot = await _context.parkingspots
+                    var existingSpot = await _context.allspots
                         .FirstOrDefaultAsync(ps => ps.location == location1);
 
                      if (existingSpot == null){
-                        await _context.parkingspots.AddAsync(new ParkingSpots
+                        await _context.allspots.AddAsync(new AllParkingSpots
                         {
                             location = location1,
                             totalspots = 40, // Default total spots
@@ -73,7 +73,7 @@ namespace ParkingService.Repositories
 
         public async Task<ParkingSpot?> UpdateAsync(ParkingSpot spot)
         {
-            var existingSpot = await _context.ParkingSpots.FindAsync(spot.id);
+            var existingSpot = await _context.parkingspots.FindAsync(spot.id);
             if (existingSpot == null)
             {
                 return null;
@@ -83,7 +83,7 @@ namespace ParkingService.Repositories
             existingSpot.location = spot.location;
             existingSpot.is_available = spot.is_available;
 
-            _context.ParkingSpots.Update(existingSpot);
+            _context.parkingspots.Update(existingSpot);
             await _context.SaveChangesAsync();
 
             return existingSpot;
@@ -91,13 +91,13 @@ namespace ParkingService.Repositories
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var spot = await _context.ParkingSpots.FindAsync(id);
+            var spot = await _context.parkingspots.FindAsync(id);
             if (spot == null)
             {
                 return false;
             }
 
-            _context.ParkingSpots.Remove(spot);
+            _context.parkingspots.Remove(spot);
             await _context.SaveChangesAsync();
             return true;
         }

@@ -1,6 +1,6 @@
 namespace ParkingService.Models
 {
-    public class ParkingSpots
+    public class AllParkingSpots
     {
         public int id { get; set; }
         public string location { get; set; }

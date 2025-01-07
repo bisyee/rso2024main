@@ -4,7 +4,7 @@ namespace ParkingService.Services
 {
     public interface IParkingSpotService
     {
-        Task<IEnumerable<ParkingSpots>> GetAllParkingSpotsAsync();
+        Task<IEnumerable<AllParkingSpots>> GetAllParkingSpotsAsync();
         Task<string> GetParkingDataAsGeoJson(string shapefilePath);
         Task<ParkingSpot?> GetParkingSpotByIdAsync(int id);
         Task<ParkingSpot> AddParkingSpotAsync(ParkingSpot spot);
@@ -12,6 +12,6 @@ namespace ParkingService.Services
         Task<bool> DeleteParkingSpotAsync(int id);
         string TransformToWGS84(string geoJson);
         Task<string> ImportGeoJsonAsync(GeoJson geoJson);
-        Task<ParkingSpots?> GetParkingSpotByLocationAsync(string loc);
+        Task<AllParkingSpots?> GetParkingSpotByLocationAsync(string loc);
     }
 }

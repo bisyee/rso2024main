@@ -90,7 +90,7 @@ namespace ParkingService.Services
     }
 
 
-    public async Task<IEnumerable<ParkingSpots>> GetAllParkingSpotsAsync()
+    public async Task<IEnumerable<AllParkingSpots>> GetAllParkingSpotsAsync()
     {
         return await _repository.GetAllAsync();
     }
@@ -100,7 +100,7 @@ namespace ParkingService.Services
         return await _repository.GetByIdAsync(id);
     }
 
-    public async Task<ParkingSpots?> GetParkingSpotByLocationAsync(string loc)
+    public async Task<AllParkingSpots?> GetParkingSpotByLocationAsync(string loc)
     {
         return await _repository.GetByNameAsync(loc);
     }
