@@ -1,65 +1,27 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: parkingservice-deployment
+  name: postgres-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: parkingservice
+      app: postgres-service
   template:
     metadata:
       labels:
-        app: parkingservice
+        app: postgres-service
     spec:
       containers:
-        - name: parkingservice
-          image: parkingsc1.azurecr.io/parkingservice:latest
-          ports:
-            - containerPort: 8080
-          env:
-            - name: ASPNETCORE_ENVIRONMENT
-              value: "Production"
-            - name: ConnectionStrings__DefaultConnection
-              value: "Host=postgres-service;Port=5432;Database=SmartParkDatabase;Username=postgres;Password=turisticka"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: parkingservice-service
-spec:
-  type: LoadBalancer
-  ports:
-    - port: 80
-      targetPort: 8080
-  selector:
-    app: parkingservice
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: postgres-deployment
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: postgres
-  template:
-    metadata:
-      labels:
-        app: postgres
-    spec:
-      containers:
-        - name: postgres
+        - name: postgres-service
           image: postgres:latest
           env:
-            - name: POSTGRES_DB
-              value: "SmartParkDatabase"
             - name: POSTGRES_USER
               value: "postgres"
             - name: POSTGRES_PASSWORD
               value: "turisticka"
+            - name: POSTGRES_DB
+              value: "SmartParkDatabase"
           ports:
             - containerPort: 5432
 ---
@@ -68,9 +30,79 @@ kind: Service
 metadata:
   name: postgres-service
 spec:
-  type: ClusterIP
-  ports:
-    - port: 5432
-      targetPort: 5432
   selector:
-    app: postgres
+    app: postgres-service
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  clusterIP: None  # This makes the service accessible within the cluster, without load balancing
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parking-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: parking-service
+  template:
+    metadata:
+      labels:
+        app: parking-service
+    spec:
+      containers:
+        - name: parking-service
+          image: parkingsaacr.azurecr.io/rso-project2024-copy-parking-service:latest
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
+            - name: ConnectionStrings__DefaultConnection
+              value: "Host=postgres-service;Port=5432;Database=SmartParkDatabase;Username=postgres;Password=turisticka"
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: parking-service
+spec:
+  selector:
+    app: parking-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer  
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: parkingsaacr.azurecr.io/rso-project2024-copy-frontend:latest
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  type: LoadBalancer
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      targetPort: 80
+  

@@ -1,0 +1,23 @@
+version: '3'
+services:
+  postgres-service:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "turisticka"
+      POSTGRES_DB: "SmartParkDatabase"
+    ports:
+      - "5432:5432"
+
+  parking-service:
+    image: rso-project2024-copy-parking-service:latest
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ConnectionStrings__DefaultConnection: "Host=postgres-service;Port=5432;Database=SmartParkDatabase;Username=postgres;Password=turisticka"
+    ports:
+      - "8080:8080"
+
+  frontend:
+    image: rso-project2024-copy-frontend:latest
+    ports:
+      - "80:80"

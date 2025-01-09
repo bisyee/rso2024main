@@ -5,7 +5,7 @@ WORKDIR /app
 
 COPY ./backend/ParkingService/*.csproj ./backend/ParkingService/
 COPY ./SharedModels/SharedModels.csproj ./SharedModels/
-
+COPY ./backend/ParkingService/Data/Dataset/MOL_Parkirisca_reprojected.shp /
 COPY ./rso-project2024.sln ./rso-project2024.sln
 
 RUN dotnet restore ./rso-project2024.sln
