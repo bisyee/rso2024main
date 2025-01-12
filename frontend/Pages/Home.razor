@@ -38,7 +38,7 @@ else
 }
 
 @code {
-    private ParkingSpots parkingSpot;
+    private AllParkingSpots parkingSpot;
     private bool isReserving = false;
     private DateTime reservationStartTime;
     private TimeSpan timeSpent;
@@ -53,12 +53,12 @@ else
         }
     }
 
-    private async Task<ParkingSpots> GetParkingSpotByLocationAsync(string loc)
+    private async Task<AllParkingSpots> GetParkingSpotByLocationAsync(string loc)
     {
         try
         {
             var formattedLocation = loc.Replace('.', ',');
-            var response = await Http.GetFromJsonAsync<ParkingSpots>($"api/ParkingSpot/{formattedLocation}");
+            var response = await Http.GetFromJsonAsync<AllParkingSpots>($"api/ParkingSpot/{formattedLocation}");
             return response;
         }
         catch
@@ -120,7 +120,7 @@ else
         }
     }
 
-    private async Task UpdateParkingSpotAsync(ParkingSpots updatedSpot)
+    private async Task UpdateParkingSpotAsync(AllParkingSpots updatedSpot)
     {
         try
         {

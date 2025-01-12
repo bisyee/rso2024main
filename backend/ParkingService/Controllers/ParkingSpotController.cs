@@ -40,7 +40,7 @@ namespace ParkingService.Controllers
         [HttpGet("parking")]
         public async Task<IActionResult> GetParkingData()
         {
-            var geoJsonData = await _parkingService.GetParkingDataAsGeoJson(@"C:\Users\User\Desktop\BIseraFRI\Magisterij\rso\rso-project2024\backend\ParkingService\Data\Dataset\MOL_Parkirisca_reprojected.shp");
+            var geoJsonData = await _parkingService.GetParkingDataAsGeoJson(@"MOL_Parkirisca_reprojected.shp");
             var jsonResult = JsonSerializer.Serialize(geoJsonData); 
             return new JsonResult(jsonResult);
         }

@@ -9,7 +9,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5000/") });
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:8080/") });
 
 builder.Services.AddScoped<ParkingApiService>();
 builder.Services.AddScoped<ReservationApiService>();
