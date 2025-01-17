@@ -26,9 +26,17 @@ spec:
               value: Development
             - name: ConnectionStrings__DefaultConnection
               value: Host=postgres-service;Port=5432;Database=SmartParkDatabase;Username=postgres;Password=turisticka
-          image: smartparks1acr.azurecr.io/rso-project2024-copy-parking-service:latest
+          image: smarptarkacrreg.azurecr.io/rso-project2024-copy-parking-service:latest
           name: parking-service
           ports:
             - containerPort: 8080
               protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
       restartPolicy: Always

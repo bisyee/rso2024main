@@ -21,7 +21,7 @@ spec:
         io.kompose.service: frontend
     spec:
       containers:
-        - image: smartparks1acr.azurecr.io/rso-project2024-copy-frontend:latest
+        - image: smarptarkacrreg.azurecr.io/frontend-image:latest
           name: frontend
           ports:
             - containerPort: 80

@@ -48,6 +48,10 @@ app.MapHealthChecks("/health");
 app.UseSwagger();
 app.UseSwaggerUI();
 
+builder.Services.AddHealthChecks()
+    .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection"),
+               name: "PostgreSQL",
+               timeout: TimeSpan.FromSeconds(5));
 
 app.UseStaticFiles();
 
