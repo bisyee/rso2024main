@@ -21,7 +21,10 @@ spec:
         io.kompose.service: frontend
     spec:
       containers:
-        - image: smarptarkacrreg.azurecr.io/frontend-image:latest
+        - env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Development
+          image: parksmartacr.azurecr.io/rso-frontend:latest
           name: frontend
           ports:
             - containerPort: 80

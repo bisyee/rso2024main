@@ -7,6 +7,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{B204
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParkingService", "backend\ParkingService\ParkingService.csproj", "{A41CA791-3EC0-42ED-BEA3-3A493FC80621}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User", "backend\ParkingService\User\User.csproj", "{B12A45A9-45EF-44C2-8E9A-2F6E3C7212D2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reservation", "backend\ParkingService\Reservation\Reservation.csproj", "{C23B56B8-34AB-4511-9D67-3F7E4C7221D3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParkingSpots", "backend\ParkingService\ParkingSpots\ParkingSpots.csproj", "{D34C67C9-23BC-4713-AD78-4F8E5C7232D4}"
+EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,3 +35,4 @@ Global
 		SolutionGuid = {7C50F1E1-5615-4512-AF74-323381A26A0B}
 	EndGlobalSection
 EndGlobal
+

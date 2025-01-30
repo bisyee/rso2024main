@@ -1333,16 +1333,6 @@
         "runtime": {
           "lib/netstandard1.3/System.Xml.XDocument.dll": {}
         }
-      },
-      "SharedModels/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v9.0",
-        "compile": {
-          "bin/placeholder/SharedModels.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/SharedModels.dll": {}
-        }
       }
     }
   },
@@ -4722,11 +4712,6 @@
         "system.xml.xdocument.4.0.11.nupkg.sha512",
         "system.xml.xdocument.nuspec"
       ]
-    },
-    "SharedModels/1.0.0": {
-      "type": "project",
-      "path": "../../SharedModels/SharedModels.csproj",
-      "msbuildProject": "../../SharedModels/SharedModels.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -4739,7 +4724,6 @@
       "NetTopologySuite.IO.ShapeFile >= 2.1.0",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 9.0.2",
       "ProjNet >= 2.0.0",
-      "SharedModels >= 1.0.0",
       "Swashbuckle.AspNetCore >= 6.5.0"
     ]
   },
@@ -4749,11 +4733,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\User\\Desktop\\BIseraFRI\\Magisterij\\rso\\rso-project2024 - Copy\\backend\\ParkingService\\ParkingService.csproj",
+      "projectUniqueName": "C:\\Users\\User\\Desktop\\BIseraFRI\\Magisterij\\rso\\rso-project2024 - Copy - Copy (2)\\backend\\ParkingService\\ParkingService.csproj",
       "projectName": "ParkingService",
-      "projectPath": "C:\\Users\\User\\Desktop\\BIseraFRI\\Magisterij\\rso\\rso-project2024 - Copy\\backend\\ParkingService\\ParkingService.csproj",
+      "projectPath": "C:\\Users\\User\\Desktop\\BIseraFRI\\Magisterij\\rso\\rso-project2024 - Copy - Copy (2)\\backend\\ParkingService\\ParkingService.csproj",
       "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\User\\Desktop\\BIseraFRI\\Magisterij\\rso\\rso-project2024 - Copy\\backend\\ParkingService\\obj\\",
+      "outputPath": "C:\\Users\\User\\Desktop\\BIseraFRI\\Magisterij\\rso\\rso-project2024 - Copy - Copy (2)\\backend\\ParkingService\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -4767,11 +4751,7 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
-          "projectReferences": {
-            "C:\\Users\\User\\Desktop\\BIseraFRI\\Magisterij\\rso\\rso-project2024 - Copy\\SharedModels\\SharedModels.csproj": {
-              "projectPath": "C:\\Users\\User\\Desktop\\BIseraFRI\\Magisterij\\rso\\rso-project2024 - Copy\\SharedModels\\SharedModels.csproj"
-            }
-          }
+          "projectReferences": {}
         }
       },
       "warningProperties": {

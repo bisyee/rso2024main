@@ -17,9 +17,9 @@ namespace ParkingService.Client
         private readonly AsyncRetryPolicy _retryPolicy;
         private readonly AsyncCircuitBreakerPolicy _circuitBreakerPolicy;
 
-        public ParkingApiService(HttpClient httpClient)
+        public ParkingApiService(HttpClient httpClient, IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient("ParkingService");
 
             _retryPolicy = Policy.Handle<HttpRequestException>()
                                  .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));

@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 services:
   postgres-service:
     image: postgres:latest
@@ -10,14 +10,41 @@ services:
       - "5432:5432"
 
   parking-service:
-    image: rso-project2024-copy-parking-service:latest
+    image: rso-parkingspots:latest
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8083"
       ConnectionStrings__DefaultConnection: "Host=postgres-service;Port=5432;Database=SmartParkDatabase;Username=postgres;Password=turisticka"
     ports:
-      - "8080:8080"
+      - "8083:8083"
+    depends_on:
+      - postgres-service
+
+  reservation-service:
+    image: rso-reservation:latest
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8082"
+      ConnectionStrings__DefaultConnection: "Host=postgres-service;Port=5432;Database=SmartParkDatabase;Username=postgres;Password=turisticka"
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres-service
+
+  user-service:
+    image: rso-user:latest
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8081"
+      ConnectionStrings__DefaultConnection: "Host=postgres-service;Port=5432;Database=SmartParkDatabase;Username=postgres;Password=turisticka"
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres-service
 
   frontend:
-    image: frontend-image:latest
+    image: rso-frontend:latest
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
     ports:
       - "80:80"
