@@ -9,9 +9,10 @@ namespace ParkingService.Client
     {
         private readonly HttpClient _httpClient;
 
-        public UserApiService(HttpClient httpClient )
+        public UserApiService(HttpClient httpClient, IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient("ReservationService");
+
         }
 
         public async Task<List<User>> GetAllUsersAsync()

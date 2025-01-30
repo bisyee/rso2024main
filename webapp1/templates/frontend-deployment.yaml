@@ -5,30 +5,28 @@ metadata:
     kompose.cmd: C:\Users\User\AppData\Local\Microsoft\WinGet\Packages\Kubernetes.kompose_Microsoft.Winget.Source_8wekyb3d8bbwe\kompose.exe convert
     kompose.version: 1.35.0 (9532ceef3)
   labels:
-    io.kompose.service: parking-service
-  name: parking-service
+    io.kompose.service: frontend1
+  name: frontend1
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      io.kompose.service: parking-service
+      io.kompose.service: frontend1
   template:
     metadata:
       annotations:
         kompose.cmd: C:\Users\User\AppData\Local\Microsoft\WinGet\Packages\Kubernetes.kompose_Microsoft.Winget.Source_8wekyb3d8bbwe\kompose.exe convert
         kompose.version: 1.35.0 (9532ceef3)
       labels:
-        io.kompose.service: parking-service
+        io.kompose.service: frontend1
     spec:
       containers:
-        - env:
-            - name: ASPNETCORE_ENVIRONMENT
-              value: Development
-            - name: ConnectionStrings__DefaultConnection
-              value: Host=postgres-service;Port=5432;Database=SmartParkDatabase;Username=postgres;Password=turisticka
-          image: rso-parkingspots:latest
-          name: parking-service
+        - name: frontend1
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
           ports:
-            - containerPort: 8080
+            - containerPort: {{ .Values.frontend.service.port }}
               protocol: TCP
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: {{ .Values.frontend.env.ASPNETCORE_ENVIRONMENT }}
       restartPolicy: Always

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service1
+  labels:
+    app: user-service1
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: user-service1
+  template:
+    metadata:
+      labels:
+        app: user-service1
+    spec:
+      containers:
+        - name: user-service1
+          image: "{{ .Values.userService.image.repository }}:{{ .Values.userService.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.userService.service.port }}
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: {{ .Values.userService.env.ASPNETCORE_ENVIRONMENT }}
+            - name: ASPNETCORE_URLS
+              value: {{ .Values.userService.env.ASPNETCORE_URLS }}
+            - name: ConnectionStrings__DefaultConnection
+              value: {{ .Values.userService.env.ConnectionStrings__DefaultConnection }}
+          resources:
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.livenessProbe.httpGet.path }}
+              port: {{ .Values.livenessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readinessProbe.httpGet.path }}
+              port: {{ .Values.readinessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}

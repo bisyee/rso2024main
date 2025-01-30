@@ -1,0 +1,135 @@
+# Default values for the Helm chart.
+
+# Global settings
+global:
+  imagePullSecrets: []
+
+# Replica count for each deployment
+replicaCount: 1
+
+# Common image configurations
+image:
+  repository: ""
+  pullPolicy: IfNotPresent
+  tag: ""
+
+# Service configurations
+service:
+  type: ClusterIP
+  port: 80
+
+# Service-specific configurations
+userService:
+  image:
+    repository: rso-user
+    tag: latest
+  service:
+    port: 8081
+  env:
+    ASPNETCORE_ENVIRONMENT: Development
+    ASPNETCORE_URLS: http://+:8081
+    ConnectionStrings__DefaultConnection: Host=postgres-service;Port=5432;Database=SmartParkDatabase;Username=postgres;Password=turisticka
+
+
+# Frontend service configuration
+frontend:
+  image:
+    repository: parksmartacr.azurecr.io/rso-frontend
+    tag: latest
+  service:
+    port: 80
+  env:
+    ASPNETCORE_ENVIRONMENT: Development
+
+
+reservationService:
+  image:
+    repository: rso-reservation
+    tag: latest
+  service:
+    port: 8082
+  env:
+    ASPNETCORE_ENVIRONMENT: Development
+    ASPNETCORE_URLS: http://+:8082
+    ConnectionStrings__DefaultConnection: Host=postgres-service;Port=5432;Database=SmartParkDatabase;Username=postgres;Password=turisticka
+
+postgresService:
+  image:
+    repository: postgres
+    tag: latest
+  service:
+    port: 5432
+  env:
+    POSTGRES_DB: SmartParkDatabase
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: turisticka
+
+parkingService:
+  image:
+    repository: rso-parking
+    tag: latest
+  service:
+    port: 8083
+  env:
+    ASPNETCORE_ENVIRONMENT: Development
+    ASPNETCORE_URLS: http://+:8083
+    ConnectionStrings__DefaultConnection: Host=postgres-service;Port=5432;Database=SmartParkDatabase;Username=postgres;Password=turisticka
+
+# Liveness and readiness probes for all services
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Pod configurations
+podAnnotations: {}
+podLabels: {}
+
+# Security context
+podSecurityContext: {}
+securityContext: {}
+
+# Autoscaling (disabled by default)
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+# Node selector, tolerations, and affinity
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Volume configurations
+volumes: []
+volumeMounts: []
+
+# Ingress configurations (disabled by default)
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using ParkingService.Data;
 using ParkingService.Services;
 using ParkingService.Repositories;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,39 +20,28 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://20.253.19.10", "localhost")
+        policy.WithOrigins("http://20.253.19.10", "localhost", "http://localhost:5094")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
 });
-
-builder.Services.AddDbContext<ParkingSpotContext>(options =>
+builder.Services.AddDbContext<UserContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IParkingSpotService, ParkingSpotService>();
-builder.Services.AddScoped<IParkingSpotRepository, ParkingSpotRepository>();
+
+builder.Services.AddScoped<IUserRepository, UserRepositoryy>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IReservationService, ReservationService>();
-builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+
 
 builder.Services.AddHealthChecks();
-
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 app.MapHealthChecks("/health");
-// using (var scope = app.Services.CreateScope())
-// {
-//     var dbContext = scope.ServiceProvider.GetRequiredService<ParkingSpotContext>();
-//     dbContext.Database.Migrate();
-// }
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
-builder.Services.AddHealthChecks()
-    .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection"),
-               name: "PostgreSQL",
-               timeout: TimeSpan.FromSeconds(5));
 
 app.UseStaticFiles();
 
